@@ -1,61 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Culinary Bot (Telegram & RESTful API)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful API project built with Laravel, powering a Telegram bot designed to help users find restaurant information, including addresses, menus, and reviews. This project integrates with the Google Places API for culinary data and utilizes various modern web development practices.
 
-## About Laravel
+**🚧 PROJECT IN PROGRESS 🚧**
+Please note that this project is currently under active development. While core functionalities are in place, some features and documentation sections are still being finalized.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Table of Contents
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Project Structure & Design Patterns](#project-structure--design-patterns)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Database Setup](#database-setup)
+  - [Environment Variables (`.env`)](#environment-variables-env)
+  - [Google Places API Key Setup](#google-places-api-key-setup)
+  - [Telegram Bot Setup](#telegram-bot-setup)
+  - [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+  - [Telegram Webhook](#telegram-webhook)
+  - [API Logs](#api-logs)
+  - [Authentication (Planned)](#authentication-planned)
+- [API Documentation (Postman)](#api-documentation-postman)
+- [Authentication (JWT/Passport & 2FA)](#authentication-jwtpassport--2fa)
+- [Contribution & Versioning](#contribution--versioning)
+- [License](#license)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+* **Telegram Bot Integration:** Responds to various message types (text, location, contact, etc.) for interactive restaurant search.
+* **Restaurant Search:** Finds restaurants based on user queries or shared locations using the Google Places API.
+* **Detailed Information:** Provides comprehensive details for a selected restaurant, including address, phone, website, rating, opening hours, and reviews.
+* **API Request Logging:** Automatically records metadata (method, URL, headers, body, IP, user agent, status code, response body, timestamps) for every API request.
+* **API Log Display:** Endpoint to view recorded API metadata.
+* **Authentication & 2FA (Planned):** Secure RESTful API endpoints using Laravel Passport with Two-Factor Authentication capabilities. **(Future enhancement)**
+* **PostgreSQL Database:** All application data is stored in a robust PostgreSQL database.
+* **Design Pattern Implementation:** Utilizes various design patterns for a clean, maintainable, and scalable codebase (e.g., Service, Middleware).
+* **Git Versioning Control with CI/CD (Planned):** Managed with Git, with a future plan for CI/CD integration. **(Future enhancement)**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Technology Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+* **Framework:** Laravel (PHP)
+* **Database:** PostgreSQL
+* **API Integration:**
+    * Telegram Bot API
+    * Google Places API (for restaurant data, as an alternative to Zomato API which is deprecated/not publicly accessible)
+* **Authentication:** Laravel Passport (OAuth2 & JWT)
+* **External Tooling:** Expose (for local development tunneling)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project Structure & Design Patterns
 
-## Laravel Sponsors
+The project follows a modular and clean architecture, implementing several design patterns:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* **Service Pattern (`app/Services`):**
+    * `BotInteractionService`: Handles the core logic for Telegram bot interactions (sending messages, parsing commands, handling various message types).
+    * `GooglePlacesService`: Encapsulates all logic related to interacting with the Google Places API, keeping API calls and data parsing separated.
+* **Middleware Pattern (`app/Http/Middleware/ApiRequestLogger.php`):**
+    * `ApiRequestLogger`: Intercepts incoming HTTP requests and outgoing responses to automatically log request metadata to the database, ensuring separation of concerns for logging.
+* **MVC (Model-View-Controller):** Standard Laravel structure is adhered to, with dedicated `Controllers`, `Models`, and `Routes`.
+    * `app/Http/Controllers/TelegramWebhookController`: Receives and dispatches Telegram webhook updates.
+    * `app/Http/Controllers/ApiLogController`: Manages the display of recorded API logs.
+    * `app/Models/ApiLog`: Eloquent model for the `api_logs` table.
+    * `app/Models/User`: Eloquent model for user management, integrated with Laravel Passport and 2FA.
 
-### Premium Partners
+## Getting Started
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Follow these steps to get your project up and running locally.
 
-## Contributing
+### Prerequisites
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* PHP >= 8.2
+* Composer
+* Node.js & NPM (for frontend assets, if any are added, but not strictly required for backend/bot)
+* PostgreSQL Database Server
+* Git
 
-## Code of Conduct
+### Installation
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git) # Replace with your actual repo
+    cd your-repo-name
+    ```
+2.  **Install Composer dependencies:**
+    ```bash
+    composer install
+    ```
+3.  **Generate Application Key:**
+    ```bash
+    php artisan key:generate
+    ```
 
-## Security Vulnerabilities
+### Database Setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1.  **Create a PostgreSQL database** for your project (e.g., `culinary_bot_db`).
+2.  **Configure `.env`** (see next section) with your database credentials.
+3.  **Run Migrations:**
+    This command will drop all existing tables and run all migrations from scratch, ensuring your database schema is up-to-date.
+    ```bash
+    php artisan migrate:fresh
+    ```
+    *Note: If you plan to seed initial data (e.g., a default user), you can use `php artisan migrate:fresh --seed`.*
+4.  **Install Laravel Passport:**
+    ```bash
+    php artisan passport:install
+    ```
+    This will create the necessary encryption keys and OAuth clients. Keep the `Client ID` and `Client Secret` it generates for Postman testing.
 
-## License
+### Environment Variables (`.env`)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Copy the example environment file and configure it:
+
+```bash
+cp .env.example .env
